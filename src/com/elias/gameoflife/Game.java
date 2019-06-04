@@ -1,5 +1,8 @@
 package com.elias.gameoflife;
 
+import com.elias.gameoflife.state.GameState;
+import com.elias.gameoflife.state.State;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -17,6 +20,8 @@ public class Game implements Runnable {
     public int width, height;
     public String title;
     public int fps = 60;
+
+    private State gamestate;
 
 
     public Game(String title, int width, int heigth) {
@@ -64,12 +69,16 @@ public class Game implements Runnable {
         display = new Display(title, width, height);
         Assets.init();
 
+        gamestate = new GameState();
+        State.setState(gamestate);
+
     }
 
-    int x = 0;
 
     public void tick() {
-        x++;
+        if (State.getState() != null) {
+            State.getState().tick();
+        }
     }
 
     public void render() {
@@ -85,10 +94,16 @@ public class Game implements Runnable {
         //Draw Begin
         g.setColor(new Color(35, 105, 230));
         //g.drawRect(100, 100, 100, 100);
-        g.drawImage(Assets.player[0], x,0, null);
+        g.drawImage(Assets.player[0], 0,0, null);
         //g.drawString(Integer.toString(fps), 0, 0);
         //g.drawString("test", 100, 100);
         //Draw End
+
+        if (State.getState() != null) {
+            State.getState().render(g);
+        }
+
+
         bs.show();
         g.dispose();
     }
